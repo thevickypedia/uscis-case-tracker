@@ -1,5 +1,7 @@
+from datetime import datetime
 from os import environ
 from random import choice
+from smtplib import SMTP
 from sys import exit
 
 from bs4 import BeautifulSoup
@@ -39,7 +41,7 @@ class USCIS:
             session.close()
 
         if response.status_code != 200:
-            exit('Failed to make a call to origin!')
+            exit('Failed to make a call to uscis!')
 
         # to use lxml (instead of html.parser) run "pip install lxml" before hand
         scrapped = BeautifulSoup(response.text, "html.parser")
@@ -48,11 +50,38 @@ class USCIS:
         title = soup.find('h1').text
         description = soup.find('p').text
         if title.strip() != 'Case Was Received':
-            print(f'New Update::{title}')
-            print(f'Description::{description}')
+            notify(subject=title, body=description)
         else:
             print(f"Last Update::{title} on {','.join(description.split(',')[0:2]).strip('On ')}")
 
 
+def notify(subject, body):
+    """Send text message through SMS gateway of destination number"""
+    body = body.encode('ascii', 'ignore').decode('ascii')  # ignore special characters without UnicodeEncodeError
+    to = f"{phone_number}@tmomail.net"
+    message = (f"From: {gmail_user}\n" + f"To: {to}\n" + f"Subject: {subject}\n" + "\n\n" + body)
+    server = SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(user=gmail_user, password=gmail_pass)
+    server.sendmail(gmail_user, to, message)
+    server.close()
+
+
 if __name__ == '__main__':
-    USCIS(receipt_number=environ.get('RECEIPT', None)).get_case_status()
+    receipt = environ.get('RECEIPT')
+    gmail_user = environ.get('GMAIL_USER')
+    gmail_pass = environ.get('GMAIL_PASS')
+    phone_number = environ.get('PHONE')
+    access_key = environ.get('ACCESS_KEY')
+    secret_key = environ.get('SECRET_KEY')
+    sender = environ.get('SENDER')
+    recipient = environ.get('RECIPIENT')
+    current_time = datetime.now()
+
+    env_vars = [receipt, gmail_user, gmail_pass, phone_number]
+
+    if any(env_var is None for env_var in env_vars):
+        exit("Check your environment variables. It should be set as:\n"
+             "'RECEIPT=<USCIS_case_ID>'\n'PHONE=<phone_number>'\n"
+             "'GMAIL_USER=<email_address>'\n'GMAIL_PASS=<gmail_password>'\n")
+    USCIS(receipt_number=receipt).get_case_status()
