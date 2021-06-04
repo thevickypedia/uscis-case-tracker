@@ -1,5 +1,4 @@
 from json import load
-from logging import basicConfig, getLogger, INFO
 from os import environ, listdir
 from random import choice
 from sys import exit
@@ -7,6 +6,8 @@ from sys import exit
 from boto3 import Session as Boto_Session
 from bs4 import BeautifulSoup
 from requests import Session
+
+from lib.logger import logger
 
 
 class USCIS:
@@ -66,14 +67,11 @@ class USCIS:
 
 
 if __name__ == '__main__':
-    basicConfig(level=INFO, datefmt='%b-%d-%Y %H:%M:%S', format='%(asctime)s - %(levelname)s - %(message)s')
-    logger = getLogger('jarvis.py')
-
     if environ.get('DOCKER'):
-        if 'params.json' not in listdir():
+        if 'params.json' not in listdir('lib'):
             exit('Using a Dockerfile requires a json file (params.json) with credentials stored as key value pairs.')
         logger.info('Running within a Docker container.')
-        json_file = load(open('params.json'))
+        json_file = load(open('lib/params.json'))
         receipt = json_file.get('RECEIPT')
         phone_number = json_file.get('PHONE')
         access_key = json_file.get('ACCESS_KEY')
