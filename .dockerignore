@@ -1,0 +1,8 @@
+.gitignore
+.git
+.DS_Store
+.idea
+.dockerignore
+venv
+README.md
+Dockerfile

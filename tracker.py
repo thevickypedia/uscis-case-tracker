@@ -1,5 +1,6 @@
+from json import load
 from logging import basicConfig, getLogger, INFO
-from os import environ
+from os import environ, listdir
 from random import choice
 from sys import exit
 
@@ -9,11 +10,7 @@ from requests import Session
 
 
 class USCIS:
-    def __init__(self, receipt_number: str = None):
-        if not receipt_number:
-            exit('No receipt number was given to make a request call to USCIS.')
-
-        self.url = f'https://egov.uscis.gov/casestatus/mycasestatus.do?appReceiptNum={receipt_number}'
+    def __init__(self, receipt_number: str):
         header_list = [
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) '
             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15',
@@ -31,6 +28,7 @@ class USCIS:
             'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.61 Safari/537.36'
         ]
 
+        self.url = f'https://egov.uscis.gov/casestatus/mycasestatus.do?appReceiptNum={receipt_number}'
         self.headers = {'User-Agent': choice(header_list)}
 
         sns_client = Boto_Session(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
@@ -68,15 +66,27 @@ class USCIS:
 
 
 if __name__ == '__main__':
-    basicConfig(level=INFO, datefmt='%b-%d-%Y %H:%M', format='%(asctime)s - %(levelname)s - %(message)s')
+    basicConfig(level=INFO, datefmt='%b-%d-%Y %H:%M:%S', format='%(asctime)s - %(levelname)s - %(message)s')
     logger = getLogger('jarvis.py')
 
-    receipt = environ.get('RECEIPT')
-    phone_number = environ.get('PHONE')
-    access_key = environ.get('ACCESS_KEY')
-    secret_key = environ.get('SECRET_KEY')
-    sender = environ.get('SENDER')
-    recipient = environ.get('RECIPIENT')
+    if environ.get('DOCKER'):
+        if 'params.json' not in listdir():
+            exit('Using a Dockerfile requires a json file (params.json) with credentials stored as key value pairs.')
+        logger.info('Running within a Docker container.')
+        json_file = load(open('params.json'))
+        receipt = json_file.get('RECEIPT')
+        phone_number = json_file.get('PHONE')
+        access_key = json_file.get('ACCESS_KEY')
+        secret_key = json_file.get('SECRET_KEY')
+        sender = json_file.get('SENDER')
+        recipient = json_file.get('RECIPIENT')
+    else:
+        receipt = environ.get('RECEIPT')
+        phone_number = environ.get('PHONE')
+        access_key = environ.get('ACCESS_KEY')
+        secret_key = environ.get('SECRET_KEY')
+        sender = environ.get('SENDER')
+        recipient = environ.get('RECIPIENT')
 
     env_vars = [receipt, phone_number, access_key, secret_key]
 
