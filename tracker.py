@@ -3,15 +3,22 @@ from os import environ, listdir
 from random import choice
 from sys import exit
 
-from boto3 import Session as Boto_Session
 from bs4 import BeautifulSoup
 from requests import Session
 
+from lib.emailer import Emailer, Session as Boto_Session
 from lib.logger import logger
 
 
 class USCIS:
+    """USCIS. A parent class for case tracker."""
+
     def __init__(self, receipt_number: str):
+        """__init__
+
+        :param receipt_number: Receipt Number for which the information is needed.
+        """
+
         header_list = [
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) '
             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15',
@@ -36,6 +43,9 @@ class USCIS:
         self.sns = sns_client.client('sns', region_name='us-west-2')
 
     def get_case_status(self):
+        """
+        Creates a session to the USCIS origin and fetches details from the response.
+        """
         with Session() as session:
             session.headers = self.headers
             response = session.get(url=self.url, headers=session.headers)
@@ -55,10 +65,17 @@ class USCIS:
             logger.info(f'New Update::{title}')
             logger.info(f'Description::{description}')
             self.notify(message=f"{title}\n\n{description}")
+            Emailer(sender=f"USCIS Case Tracker <{sender}>", recipients=[recipient],
+                    title=title, text=description,
+                    access_key=access_key, secret_key=secret_key)
         else:
             logger.info(f"Last Update::{title} on {','.join(description.split(',')[0:2]).strip('On ')}")
 
     def notify(self, message):
+        """
+        Notification is triggered when the case status, is other than 'Case Was Received'
+        Notifies using AWS SNS and AWS SES
+        """
         sns_response = self.sns.publish(PhoneNumber=phone_number, Message=message)
         if sns_response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
             logger.info('SNS notification has been sent.')
