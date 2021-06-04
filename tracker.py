@@ -1,5 +1,5 @@
 from json import load
-from os import environ, listdir
+from os import listdir
 from random import choice
 from sys import exit
 
@@ -67,7 +67,7 @@ class USCIS:
             self.notify(message=f"{title}\n\n{description}")
             Emailer(sender=f"USCIS Case Tracker <{sender}>", recipients=[recipient],
                     title=title, text=description,
-                    access_key=access_key, secret_key=secret_key)
+                    access_key=access_key, secret_key=secret_key) if sender and recipient else None
         else:
             logger.info(f"Last Update::{title} on {','.join(description.split(',')[0:2]).strip('On ')}")
 
@@ -84,30 +84,27 @@ class USCIS:
 
 
 if __name__ == '__main__':
-    if environ.get('DOCKER'):
-        if 'params.json' not in listdir('lib'):
-            exit('Using a Dockerfile requires a json file (params.json) with credentials stored as key value pairs.')
-        logger.info('Running within a Docker container.')
-        json_file = load(open('lib/params.json'))
-        receipt = json_file.get('RECEIPT')
-        phone_number = json_file.get('PHONE')
-        access_key = json_file.get('ACCESS_KEY')
-        secret_key = json_file.get('SECRET_KEY')
-        sender = json_file.get('SENDER')
-        recipient = json_file.get('RECIPIENT')
-    else:
-        receipt = environ.get('RECEIPT')
-        phone_number = environ.get('PHONE')
-        access_key = environ.get('ACCESS_KEY')
-        secret_key = environ.get('SECRET_KEY')
-        sender = environ.get('SENDER')
-        recipient = environ.get('RECIPIENT')
+    if 'params.json' not in listdir('lib'):
+        exit('Script requires a json file (params.json) with credentials stored as key value pairs.')
+    json_file = load(open('lib/params.json'))
+    receipt = json_file.get('RECEIPT')
+    phone_number = json_file.get('PHONE')
+    access_key = json_file.get('ACCESS_KEY')
+    secret_key = json_file.get('SECRET_KEY')
+    sender = json_file.get('SENDER')
+    recipient = json_file.get('RECIPIENT')
 
     env_vars = [receipt, phone_number, access_key, secret_key]
 
     if any(env_var is None for env_var in env_vars):
-        exit("Check your environment variables. It should be set as:\n"
-             "'RECEIPT=<USCIS_case_ID>'\n'PHONE=<phone_number>'\n"
-             "'ACCESS_KEY=<aws_access_key>'\n'SECRET_KEY=<aws_secret_key>'")
+        exit("Your 'params.json' should appear as following:\n"
+             "{\n"
+             "\tRECEIPT: <your_receipt_number>,\n"
+             "\tPHONE: <phone_number>,\n"
+             "\tACCESS_KEY: <AWS_access_key>,\n"
+             "\tSECRET_KEY: <AWS_secret_key>,\n"
+             "\tSENDER: <sender_email_address>,\n"
+             "\tRECIPIENT: <recipient_email_address>\n"
+             "}")
 
     USCIS(receipt_number=receipt).get_case_status()

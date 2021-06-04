@@ -1,8 +1,5 @@
 FROM python:3.7-slim
 
-# DOCKER env var is to indicate the script to fetch credentials from params.json
-ENV DOCKER="True"
-
 RUN mkdir /opt/uscis-case-tracker
 COPY . /opt/uscis-case-tracker
 
