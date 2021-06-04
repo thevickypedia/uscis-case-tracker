@@ -1,62 +1,72 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
-from boto3 import Session
+from email.message import EmailMessage
+from smtplib import SMTP_SSL, SMTP, SMTPAuthenticationError, SMTPException
+from ssl import create_default_context
 
 from lib.logger import logger
 
 
 class Emailer:
-    def __init__(self, sender: str, recipients: list, title: str, text: str, access_key: str, secret_key: str):
+    def __init__(self, sender: str, password: str, recipient: str, title: str, text: str,
+                 tls: bool = False, ssl: bool = False):
         """Returns a new Emailer object.
-        >>> Emailer() #doctest: +ELLIPSIS
+        >>> Emailer()
         <emailer.Emailer object at 0x...>
-
-        :param access_key: Access Key to access AWS clients
-        :param secret_key: Secret Key to access AWS clients
-        """
-        boto3_ses_client = Session(
-            aws_access_key_id=access_key,
-            aws_secret_access_key=secret_key
-        ).client('ses', region_name='us-west-2')
-        response = self.send_mail(boto3_ses_client, sender, recipients, title, text)
-        if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
-            logger.info('Email notification has been sent')
-        else:
-            logger.error(f'Unable to send email notification.\n{response}')
-
-    @staticmethod
-    def create_multipart_message(sender: str, recipients: list, title: str, text: str) -> MIMEMultipart:
-        """
-        Creates a MIME multipart message object.
-        Uses only the Python `email` standard library.
-        Emails, both sender and recipients, can be just the email string or
-        have the format 'The Name <the_email@host.com>'.
+        Uses TLS by default, unless specified to use SSL connection.
 
         :param sender: The sender.
-        :param recipients: List of recipients. Needs to be a list, even if only one recipient.
+        :param password: Aunthenticate sender.
+        :param recipient: Recipient email address.
         :param title: The title of the email.
-        :param text: The text version of the email body (optional).
-        :return: A `MIMEMultipart` to be used to send the email.
+        :param text: The text version of the email body.
         """
-        multipart_content_subtype = 'alternative' if text else 'mixed'
-        msg = MIMEMultipart(multipart_content_subtype)
-        msg['Subject'] = title
-        msg['From'] = sender
-        msg['To'] = ', '.join(recipients)
-        if text:
-            part = MIMEText(text, 'plain')
-            msg.attach(part)
-        return msg
+        self.message = EmailMessage()
+        self.message.set_content(text)
+        self.message['Subject'] = title
+        self.message['From'] = f"USCIS Case Tracker <{sender}>"
+        self.message['To'] = recipient
+        self.sender = sender
+        self.password = password
+        if tls or (not tls and not ssl):
+            self.using_tls()
+        else:
+            self.using_ssl()
 
-    def send_mail(self, boto3, sender: str, recipients: list, title: str, text: str) -> dict:
+    def using_tls(self):
         """
-        Sends email using the ses_client
+        Sends email using TLS (Transport Layer Security)
+
+        :return: None
         """
-        msg = self.create_multipart_message(sender, recipients, title, text)
-        ses_client = boto3
-        return ses_client.send_raw_email(
-            Source=sender,
-            Destinations=recipients,
-            RawMessage={'Data': msg.as_string()}
-        )
+        try:
+            server = SMTP(host='smtp.gmail.com', port=587)
+            server.starttls(context=create_default_context())
+            server.ehlo()
+            server.login(self.sender, self.password)
+            self.message.set_content(self.message.get_content() + '\nEmail was sent through a secure tunnel using TLS')
+            server.send_message(msg=self.message)
+            server.quit()
+            server.close()
+            logger.info('Email notification has been sent.')
+        except (SMTPException, SMTPAuthenticationError) as error:
+            logger.error('Login Failed. Please check the GMAIL_USER and GMAIL_PASS in params.json.')
+            logger.critical('Logon to https://myaccount.google.com/lesssecureapps and turn ON less secure apps.')
+            logger.error(error)
+
+    def using_ssl(self):
+        """
+        Sends email using SSL (Secure Sockets Layer)
+
+        :return: None
+        """
+        try:
+            server = SMTP_SSL(host='smtp.gmail.com', port=465, context=create_default_context())
+            server.login(self.sender, self.password)
+            self.message.set_content(self.message.get_content() + '\nEmail was sent through a secure tunnel using SSL')
+            server.send_message(msg=self.message)
+            server.quit()
+            server.close()
+            logger.info('Email notification has been sent.')
+        except (SMTPException, SMTPAuthenticationError) as error:
+            logger.error('Login Failed. Please check the GMAIL_USER and GMAIL_PASS in params.json.')
+            logger.critical('Logon to https://myaccount.google.com/lesssecureapps and turn ON less secure apps.')
+            logger.error(error)

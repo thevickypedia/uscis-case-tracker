@@ -6,12 +6,12 @@ from sys import exit
 from bs4 import BeautifulSoup
 from requests import Session
 
-from lib.emailer import Emailer, Session as Boto_Session
+from lib.emailer import Emailer, SMTP, SMTPException
 from lib.logger import logger
 
 
 class USCIS:
-    """USCIS. A parent class for case tracker."""
+    """USCIS. A parent class for USCIS case tracker."""
 
     def __init__(self, receipt_number: str):
         """__init__
@@ -39,48 +39,55 @@ class USCIS:
         self.url = f'https://egov.uscis.gov/casestatus/mycasestatus.do?appReceiptNum={receipt_number}'
         self.headers = {'User-Agent': choice(header_list)}
 
-        sns_client = Boto_Session(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-        self.sns = sns_client.client('sns', region_name='us-west-2')
-
     def get_case_status(self):
         """
         Creates a session to the USCIS origin and fetches details from the response.
+
+        :return:
         """
         with Session() as session:
             session.headers = self.headers
             response = session.get(url=self.url, headers=session.headers)
             session.close()
 
-        if response.status_code != 200:
-            exit('Failed to make a call to origin!')
+        if (status_code := response.status_code) != 200:
+            exit(f'Failed to make a call to origin!\nHTTP Response Code: {status_code}')
 
         # to use lxml (instead of html.parser) run "pip install lxml" before hand
         scrapped = BeautifulSoup(response.text, "html.parser")
         soup = scrapped.find_all('div', {'class': 'rows text-center'})[0]
 
-        title = soup.find('h1').text
-        description = soup.find('p').text
+        subject = soup.find('h1').text
+        body = soup.find('p').text
 
-        if title.strip() != 'Case Was Received':
-            logger.info(f'New Update::{title}')
-            logger.info(f'Description::{description}')
-            self.notify(message=f"{title}\n\n{description}")
-            Emailer(sender=f"USCIS Case Tracker <{sender}>", recipients=[recipient],
-                    title=title, text=description,
-                    access_key=access_key, secret_key=secret_key) if sender and recipient else None
+        if subject.strip() != 'Case Was Received':
+            logger.info(f'New Update::{subject}')
+            logger.info(f'Description::{body}')
+            Emailer(sender=sender, password=password, recipient=recipient, title=subject, text=body + '\n\n' + self.url)
+            self.notify(subject=subject)
         else:
-            logger.info(f"Last Update::{title} on {','.join(description.split(',')[0:2]).strip('On ')}")
+            logger.info(f"Last Update::{subject} on {','.join(body.split(',')[0:2]).strip('On ')}")
 
-    def notify(self, message):
+    def notify(self, subject):
         """
         Notification is triggered when the case status, is other than 'Case Was Received'
-        Notifies using AWS SNS and AWS SES
+        Notifies via text message through SMS gateway of destination number.
+
+        :return: None
         """
-        sns_response = self.sns.publish(PhoneNumber=phone_number, Message=message)
-        if sns_response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
-            logger.info('SNS notification has been sent.')
-        else:
-            logger.error(f'Unable to send SNS notification.\n{sns_response}')
+        try:
+            to = f"{phone_number}@tmomail.net"
+            message = (f"From: {sender}\n" + f"To: {to}\n" + f"Subject: {subject}\n" + "\n\n" + self.url)
+            server = SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(user=sender, password=password)
+            server.sendmail(sender, to, message)
+            server.quit()
+            server.close()
+            logger.info('SMS notification has been sent.')
+        except SMTPException as error:
+            logger.info('Failed to send SMS notification.')
+            exit(error)
 
 
 if __name__ == '__main__':
@@ -89,21 +96,19 @@ if __name__ == '__main__':
     json_file = load(open('lib/params.json'))
     receipt = json_file.get('RECEIPT')
     phone_number = json_file.get('PHONE')
-    access_key = json_file.get('ACCESS_KEY')
-    secret_key = json_file.get('SECRET_KEY')
-    sender = json_file.get('SENDER')
+    sender = json_file.get('GMAIL_USER')
+    password = json_file.get('GMAIL_PASS')
     recipient = json_file.get('RECIPIENT')
 
-    env_vars = [receipt, phone_number, access_key, secret_key]
+    env_vars = [receipt, phone_number, sender, password, recipient]
 
     if any(env_var is None for env_var in env_vars):
         exit("Your 'params.json' should appear as following:\n"
              "{\n"
              "\tRECEIPT: <your_receipt_number>,\n"
              "\tPHONE: <phone_number>,\n"
-             "\tACCESS_KEY: <AWS_access_key>,\n"
-             "\tSECRET_KEY: <AWS_secret_key>,\n"
-             "\tSENDER: <sender_email_address>,\n"
+             "\tGMAIL_USER: <sender_email_address>,\n"
+             "\tGMAIL_PASS: <sender_id_password>,\n"
              "\tRECIPIENT: <recipient_email_address>\n"
              "}")
 
