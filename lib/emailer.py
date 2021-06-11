@@ -1,24 +1,28 @@
 from email.message import EmailMessage
-from smtplib import SMTP_SSL, SMTP, SMTPAuthenticationError, SMTPException
+from smtplib import SMTP, SMTP_SSL, SMTPAuthenticationError, SMTPException
 from ssl import create_default_context
 
 from lib.logger import logger
 
 
 class Emailer:
+    """Initiates Emailer object.
+
+    Takes gmail email id, password, recipient, title and text as parameters, to send notification using TLS by default.
+
+    >>> Emailer()
+
+    Args:
+        sender: The sender.
+        password: Aunthenticate sender.
+        recipient: Recipient email address.
+        title: The title of the email.
+        text: The text version of the email body.
+
+    """
+
     def __init__(self, sender: str, password: str, recipient: str, title: str, text: str,
                  tls: bool = False, ssl: bool = False):
-        """Returns a new Emailer object.
-        >>> Emailer()
-        <emailer.Emailer object at 0x...>
-        Uses TLS by default, unless specified to use SSL connection.
-
-        :param sender: The sender.
-        :param password: Aunthenticate sender.
-        :param recipient: Recipient email address.
-        :param title: The title of the email.
-        :param text: The text version of the email body.
-        """
         self.message = EmailMessage()
         self.message.set_content(text)
         self.message['Subject'] = title
@@ -32,10 +36,10 @@ class Emailer:
             self.using_ssl()
 
     def using_tls(self):
-        """
-        Sends email using TLS (Transport Layer Security)
+        """To send an email using Transport Layer Security - TLS.
 
-        :return: None
+        Returns: None
+
         """
         try:
             server = SMTP(host='smtp.gmail.com', port=587)
@@ -53,10 +57,10 @@ class Emailer:
             logger.error(error)
 
     def using_ssl(self):
-        """
-        Sends email using SSL (Secure Sockets Layer)
+        """To send an email using Secure Sockets Layer - SSL.
 
-        :return: None
+        Returns: None
+
         """
         try:
             server = SMTP_SSL(host='smtp.gmail.com', port=465, context=create_default_context())

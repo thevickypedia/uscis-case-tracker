@@ -6,19 +6,19 @@ from sys import exit
 from bs4 import BeautifulSoup
 from requests import Session
 
-from lib.emailer import Emailer, SMTP, SMTPException
+from lib.emailer import SMTP, Emailer, SMTPException
 from lib.logger import logger
 
 
 class USCIS:
-    """USCIS. A parent class for USCIS case tracker."""
+    """USCIS. A parent class for USCIS case tracker.
+
+    Args:
+         receipt_number: Receipt Number for which the information is needed.
+
+    """
 
     def __init__(self, receipt_number: str):
-        """__init__
-
-        :param receipt_number: Receipt Number for which the information is needed.
-        """
-
         header_list = [
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) '
             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15',
@@ -40,10 +40,10 @@ class USCIS:
         self.headers = {'User-Agent': choice(header_list)}
 
     def get_case_status(self):
-        """
-        Creates a session to the USCIS origin and fetches details from the response.
+        """To create a session to the USCIS origin using requests module and fetch details from the response.
 
-        :return:
+        Returns: None
+
         """
         with Session() as session:
             session.headers = self.headers
@@ -69,11 +69,12 @@ class USCIS:
             logger.info(f"Last Update::{subject} on {','.join(body.split(',')[0:2]).strip('On ')}")
 
     def notify(self, subject):
-        """
-        Notification is triggered when the case status, is other than 'Case Was Received'
+        """Notification is triggered when the case status, is other than 'Case Was Received'.
+
         Notifies via text message through SMS gateway of destination number.
 
-        :return: None
+        Returns: None
+
         """
         try:
             to = f"{phone_number}@tmomail.net"
