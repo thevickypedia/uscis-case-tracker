@@ -41,9 +41,41 @@
 <h1>Welcome to uscis_case_tracker’s documentation!<a class="headerlink" href="#welcome-to-uscis-case-tracker-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-uscis_case_tracker.tracker"></span><dl class="py class">
-<dt class="sig sig-object py" id="uscis_case_tracker.tracker.Emailer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">uscis_case_tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">Emailer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.Emailer" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-src.tracker"></span><dl class="py class">
+<dt class="sig sig-object py" id="src.tracker.USCIS">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.tracker.</span></span><span class="sig-name descname"><span class="pre">USCIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receipt_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.tracker.USCIS" title="Permalink to this definition">¶</a></dt>
+<dd><p>USCIS. A parent class for USCIS case tracker.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">USCIS</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>receipt_number</strong> – Receipt Number for which the information is needed.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.tracker.USCIS.get_case_status">
+<span class="sig-name descname"><span class="pre">get_case_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.tracker.USCIS.get_case_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>To create a session to the USCIS origin using requests module and fetch details from the response.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.tracker.USCIS.notify">
+<span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.tracker.USCIS.notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Notification is triggered when the case status, is other than ‘Case Was Received’.</p>
+<p>Notifies via text message through SMS gateway of destination number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subject</strong> – Receives the title as argument <cite>subject</cite> and send an SMS notification.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-src.lib.emailer"></span><dl class="py class">
+<dt class="sig sig-object py" id="src.lib.emailer.Emailer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.lib.emailer.</span></span><span class="sig-name descname"><span class="pre">Emailer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.lib.emailer.Emailer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiates Emailer object.</p>
 <p>Takes gmail email id, password, recipient, title and text as parameters, to send notification using TLS by default.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Emailer</span><span class="p">()</span>
@@ -61,65 +93,15 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="uscis_case_tracker.tracker.Emailer.using_ssl">
-<span class="sig-name descname"><span class="pre">using_ssl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.Emailer.using_ssl" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.lib.emailer.Emailer.using_ssl">
+<span class="sig-name descname"><span class="pre">using_ssl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.lib.emailer.Emailer.using_ssl" title="Permalink to this definition">¶</a></dt>
 <dd><p>To send an email using Secure Sockets Layer - SSL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="uscis_case_tracker.tracker.Emailer.using_tls">
-<span class="sig-name descname"><span class="pre">using_tls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.Emailer.using_tls" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.lib.emailer.Emailer.using_tls">
+<span class="sig-name descname"><span class="pre">using_tls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.lib.emailer.Emailer.using_tls" title="Permalink to this definition">¶</a></dt>
 <dd><p>To send an email using Transport Layer Security - TLS.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="uscis_case_tracker.tracker.USCIS">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">uscis_case_tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">USCIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receipt_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.USCIS" title="Permalink to this definition">¶</a></dt>
-<dd><p>USCIS. A parent class for USCIS case tracker.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">USCIS</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>receipt_number</strong> – Receipt Number for which the information is needed.</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="uscis_case_tracker.tracker.USCIS.get_case_status">
-<span class="sig-name descname"><span class="pre">get_case_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.USCIS.get_case_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>To create a session to the USCIS origin using requests module and fetch details from the response.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uscis_case_tracker.tracker.USCIS.notify">
-<span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.USCIS.notify" title="Permalink to this definition">¶</a></dt>
-<dd><p>Notification is triggered when the case status, is other than ‘Case Was Received’.</p>
-<p>Notifies via text message through SMS gateway of destination number.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>subject</strong> – Receives the title as argument <cite>subject</cite> and send an SMS notification.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>

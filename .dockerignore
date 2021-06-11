@@ -4,5 +4,7 @@
 .idea
 .dockerignore
 venv
+docs
+doc_generator
 README.md
 Dockerfile

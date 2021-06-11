@@ -20,7 +20,7 @@ if [[ "$docker_check" == "$docker_condition" ]]; then
   exit
 fi
 
-echo "**********************************************************************************************************"
+echo -e "\n**********************************************************************************************************"
 echo "RUNNING THIS STEP WILL DELETE ALL YOUR DOCKER CONTAINERS INCLUDING THE DOCKER IMAGES"
 echo "**********************************************************************************************************"
 read -p "Are you sure you want to continue? <Y/N> " prompt
@@ -48,7 +48,7 @@ then
   docker rmi $(docker images -q) -f
 fi
 
-echo "**********************************************************************************************************"
+echo -e "\n**********************************************************************************************************"
 echo "RUNNING THIS STEP WILL BUILD AN IMAGE FOR USCIS-CASE-TRACKER AND RUN IT"
 echo "**********************************************************************************************************"
 read -p "Are you sure you want to continue? <Y/N> " prompt
@@ -69,3 +69,4 @@ then
   else
     echo "GOOD BYE"
 fi
+done

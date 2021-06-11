@@ -10,10 +10,13 @@ Welcome to uscis_case_tracker's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: uscis_case_tracker.tracker
+.. automodule:: src.tracker
    :members:
    :undoc-members:
 
+.. automodule:: src.lib.emailer
+   :members:
+   :undoc-members:
 
 
 Indices and tables

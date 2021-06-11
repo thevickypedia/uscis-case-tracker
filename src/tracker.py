@@ -1,18 +1,18 @@
-from email.message import EmailMessage
 from json import load
-from logging import INFO, basicConfig, getLogger
-from os import listdir
+from os import environ, listdir
 from random import choice
-from smtplib import SMTP, SMTP_SSL, SMTPAuthenticationError, SMTPException
-from ssl import create_default_context
 from sys import exit
 
 from bs4 import BeautifulSoup
 from requests import Session
 
-basicConfig(level=INFO, datefmt='%b-%d-%Y %H:%M:%S',
-            format='%(asctime)s - %(levelname)s - %(funcName)s - Line: %(lineno)d - %(message)s')
-logger = getLogger('tracker.py')
+# conditional imports to avoid module errors while running as a docker container
+if environ.get('DOCKER'):
+    from lib.emailer import SMTP, Emailer, SMTPException
+    from lib.logger import logger
+else:
+    from src.lib.emailer import SMTP, Emailer, SMTPException
+    from src.lib.logger import logger
 
 
 class USCIS:
@@ -47,12 +47,7 @@ class USCIS:
         self.headers = {'User-Agent': choice(header_list)}
 
     def get_case_status(self):
-        """To create a session to the USCIS origin using requests module and fetch details from the response.
-
-        Returns:
-            None
-
-        """
+        """To create a session to the USCIS origin using requests module and fetch details from the response."""
         with Session() as session:
             session.headers = self.headers
             response = session.get(url=self.url, headers=session.headers)
@@ -68,7 +63,7 @@ class USCIS:
         subject = soup.find('h1').text
         body = soup.find('p').text
 
-        if subject.strip() != 'Case Was Received':# and subject and body:
+        if subject.strip() != 'Case Was Received' and subject and body:
             logger.info(f'New Update::{subject}')
             logger.info(f'Description::{body}')
             Emailer(sender=email_sender, password=email_password,
@@ -79,16 +74,13 @@ class USCIS:
         else:
             logger.fatal(f'No information was retrieved from {self.url}')
 
-    def notify(self, subject):
+    def notify(self, subject: str):
         """Notification is triggered when the case status, is other than 'Case Was Received'.
 
         Notifies via text message through SMS gateway of destination number.
 
         Args:
             subject: Receives the title as argument `subject` and send an SMS notification.
-
-        Returns:
-            None
 
         """
         try:
@@ -109,85 +101,6 @@ class USCIS:
                 logger.error('Failed to send SMS. Please check the GMAIL_USER and GMAIL_PASS in params.json.')
                 logger.critical('Logon to https://myaccount.google.com/lesssecureapps and turn ON less secure apps.')
                 exit(error)
-
-
-class Emailer:
-    """Initiates Emailer object.
-
-    Takes gmail email id, password, recipient, title and text as parameters, to send notification using TLS by default.
-
-    >>> Emailer()
-
-    Args:
-        sender: Email address of the sender alias username.
-        password: Password of the sender email address.
-        recipient: Recipient email address.
-        title: The title of the email.
-        text: The text version of the email body.
-
-    """
-
-    def __init__(self, sender: str, password: str, recipient: str, title: str, text: str,
-                 tls: bool = False, ssl: bool = False):
-        self.message = EmailMessage()
-        self.message.set_content(text)
-        self.message['Subject'] = title
-        self.message['From'] = f"USCIS Case Tracker <{sender}>"
-        self.message['To'] = recipient
-        self.sender = sender
-        self.password = password
-        if tls or (not tls and not ssl):
-            self.using_tls()
-        else:
-            self.using_ssl()
-
-    def using_tls(self):
-        """To send an email using Transport Layer Security - TLS.
-
-        Returns:
-            None
-
-        """
-        try:
-            server = SMTP(host='smtp.gmail.com', port=587)
-            server.starttls(context=create_default_context())
-            server.ehlo()
-            server.login(self.sender, self.password)
-            self.message.set_content(self.message.get_content() + '\nEmail was sent through a secure tunnel using TLS')
-            server.send_message(msg=self.message)
-            server.quit()
-            server.close()
-            logger.info('Email notification has been sent.')
-        except (SMTPException, SMTPAuthenticationError) as error:
-            if 'Username and Password not accepted' in str(error):
-                logger.error(error)
-                exit(1)
-            else:
-                logger.error('Login Failed. Please check the GMAIL_USER and GMAIL_PASS in params.json.')
-                logger.critical('Logon to https://myaccount.google.com/lesssecureapps and turn ON less secure apps.')
-
-    def using_ssl(self):
-        """To send an email using Secure Sockets Layer - SSL.
-
-        Returns:
-            None
-
-        """
-        try:
-            server = SMTP_SSL(host='smtp.gmail.com', port=465, context=create_default_context())
-            server.login(self.sender, self.password)
-            self.message.set_content(self.message.get_content() + '\nEmail was sent through a secure tunnel using SSL')
-            server.send_message(msg=self.message)
-            server.quit()
-            server.close()
-            logger.info('Email notification has been sent.')
-        except (SMTPException, SMTPAuthenticationError) as error:
-            if 'Username and Password not accepted' in str(error):
-                logger.error(error)
-                exit(1)
-            else:
-                logger.error('Login Failed. Please check the GMAIL_USER and GMAIL_PASS in params.json.')
-                logger.critical('Logon to https://myaccount.google.com/lesssecureapps and turn ON less secure apps.')
 
 
 if __name__ == '__main__':
