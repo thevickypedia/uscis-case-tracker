@@ -10,6 +10,9 @@ USCIS Case Tracker and notifier using:
 `pip install virtualenv==20.0.33`<br>
 `pre-commit run --all-files`
 
+### Runbook:
+https://thevickypedia.github.io/uscis_case_tracker/
+
 ### Docker Setup:
 Uses `python:3.8-slim` to reduce build time. Since credentials are passed using `params.json` in run-time, there is no need for `ENV` in [Dockerfile](Dockerfile)
 
