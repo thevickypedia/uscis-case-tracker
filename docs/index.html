@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Welcome to uscis_case_tracker’s documentation! &#8212; uscis_case_tracker  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="#">uscis_case_tracker  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="welcome-to-uscis-case-tracker-s-documentation">
+<h1>Welcome to uscis_case_tracker’s documentation!<a class="headerlink" href="#welcome-to-uscis-case-tracker-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-uscis_case_tracker.tracker"></span><dl class="py class">
+<dt class="sig sig-object py" id="uscis_case_tracker.tracker.Emailer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">uscis_case_tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">Emailer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.Emailer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiates Emailer object.</p>
+<p>Takes gmail email id, password, recipient, title and text as parameters, to send notification using TLS by default.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Emailer</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sender</strong> – Email address of the sender alias username.</p></li>
+<li><p><strong>password</strong> – Password of the sender email address.</p></li>
+<li><p><strong>recipient</strong> – Recipient email address.</p></li>
+<li><p><strong>title</strong> – The title of the email.</p></li>
+<li><p><strong>text</strong> – The text version of the email body.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="uscis_case_tracker.tracker.Emailer.using_ssl">
+<span class="sig-name descname"><span class="pre">using_ssl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.Emailer.using_ssl" title="Permalink to this definition">¶</a></dt>
+<dd><p>To send an email using Secure Sockets Layer - SSL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uscis_case_tracker.tracker.Emailer.using_tls">
+<span class="sig-name descname"><span class="pre">using_tls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.Emailer.using_tls" title="Permalink to this definition">¶</a></dt>
+<dd><p>To send an email using Transport Layer Security - TLS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uscis_case_tracker.tracker.USCIS">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">uscis_case_tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">USCIS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">receipt_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.USCIS" title="Permalink to this definition">¶</a></dt>
+<dd><p>USCIS. A parent class for USCIS case tracker.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">USCIS</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>receipt_number</strong> – Receipt Number for which the information is needed.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="uscis_case_tracker.tracker.USCIS.get_case_status">
+<span class="sig-name descname"><span class="pre">get_case_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.USCIS.get_case_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>To create a session to the USCIS origin using requests module and fetch details from the response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uscis_case_tracker.tracker.USCIS.notify">
+<span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#uscis_case_tracker.tracker.USCIS.notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Notification is triggered when the case status, is other than ‘Case Was Received’.</p>
+<p>Notifies via text message through SMS gateway of destination number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subject</strong> – Receives the title as argument <cite>subject</cite> and send an SMS notification.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </div>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/index.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Vignesh Sivanandha Rao.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

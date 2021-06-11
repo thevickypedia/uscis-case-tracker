@@ -2,7 +2,13 @@
 USCIS Case Tracker and notifier using:
 - `requests` - Get details from [USCIS](https://egov.uscis.gov/)
 - `BeautifulSoup` - Extract tag values from html response
-- `SMTP` - Send email and SMS notification using Simple Mail Transfer Protocol [(choose between TLS or SSL)](lib/emailer.py)
+- `SMTP` - Send email and SMS notification using Simple Mail Transfer Protocol [(choose between TLS or SSL)](emailer.py)
+
+### Commit:
+`pip install -U sphinx==4.0.2`<br>
+`pip install pre-commit==2.13.0`<br>
+`pip install virtualenv==20.0.33`<br>
+`pre-commit run --all-files`
 
 ### Docker Setup:
 Uses `python:3.8-slim` to reduce build time. Since credentials are passed using `params.json` in run-time, there is no need for `ENV` in [Dockerfile](Dockerfile)
